@@ -1,0 +1,14 @@
+:root { font-family: Inter, system-ui, -apple-system, sans-serif; color: #e6edf3; background: #0d1117; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; }
+.app-shell { max-width: 760px; margin: 0 auto; padding: 1rem; }
+header { margin-bottom: 1rem; }
+.panel { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
+button { background: #238636; color: white; border: none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; margin-right: 0.5rem; }
+button.secondary { background: #30363d; }
+input, textarea, select { width: 100%; background: #0d1117; color: #e6edf3; border: 1px solid #30363d; padding: 0.5rem; border-radius: 8px; margin-top: 0.3rem; margin-bottom: 0.8rem; }
+.badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; background: #1f6feb; margin-right: 0.4rem; }
+.row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+.timer { font-size: 2rem; font-weight: 700; }
+a { color: #58a6ff; }
+ul { padding-left: 1rem; }
