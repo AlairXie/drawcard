@@ -40,4 +40,5 @@ function confirm() {
 
   <CardView v-if="card" :card="card" />
   <button v-if="card" @click="confirm">开始冲刺</button>
+  <button class="secondary" @click="router.push('/')">返回首页</button>
 </template>

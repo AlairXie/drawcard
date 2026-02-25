@@ -18,3 +18,7 @@ export const router = createRouter({
     { path: '/history', component: HistoryPage }
   ]
 });
+
+router.afterEach(() => {
+  document.title = '微行动';
+});

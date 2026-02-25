@@ -33,5 +33,6 @@ const nextStep = computed(() => {
     <p>{{ nextStep }}</p>
     <button @click="router.push('/draw')">再开一局</button>
     <button class="secondary" @click="router.push('/history')">查看历史</button>
+    <button class="secondary" @click="router.push('/')">返回首页</button>
   </div>
 </template>
