@@ -12,8 +12,8 @@ onMounted(() => {
   if (!store.todayState?.startedAt) router.replace('/draw');
 });
 
-function submit(payload: { outputText: string; outputLink?: string }) {
-  const record = store.completeRun(payload);
+function submit(payload: { outputText: string; outputLink?: string; screenshotNote?: string; filePath?: string }) {
+  const record = store.settleRun({ ...payload, outcome: 'win' });
   if (record) {
     sessionStorage.setItem('ss_last_result', record.id);
     router.push('/result');

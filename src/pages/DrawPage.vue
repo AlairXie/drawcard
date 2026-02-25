@@ -28,17 +28,16 @@ function confirm() {
 
 <template>
   <div class="panel">
-    <label>冲刺时长</label>
+    <h3>匹配成功，选择冲刺时长</h3>
     <select v-model.number="duration">
-      <option :value="3">3 分钟（保命）</option>
+      <option :value="3">3 分钟（保命模式）</option>
       <option :value="10">10 分钟（默认）</option>
-      <option :value="15">15 分钟（撬动）</option>
+      <option :value="15">15 分钟（拉满）</option>
     </select>
     <button @click="card = store.pickCard(duration, false)">抽卡</button>
     <button class="secondary" :disabled="store.todayState?.rerolled" @click="reroll">重抽一次</button>
   </div>
 
   <CardView v-if="card" :card="card" />
-
-  <button v-if="card" @click="confirm">确认开跑</button>
+  <button v-if="card" @click="confirm">开始冲刺</button>
 </template>

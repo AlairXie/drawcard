@@ -1,14 +1,20 @@
 export type CardTier = 'S' | 'M' | 'L';
 
+export type GameMode = 'mixed' | 'single';
+
 export type Card = {
   id: string;
   tier: CardTier;
   title: string;
   instruction: string;
   expectedOutputHint: string;
+  tags?: string[];
+  enabledToday: boolean;
 };
 
 export type DurationMin = 3 | 10 | 15;
+
+export type RunOutcome = 'win' | 'lose';
 
 export type RunRecord = {
   id: string;
@@ -19,22 +25,34 @@ export type RunRecord = {
   cardTier: CardTier;
   outputText: string;
   outputLink?: string;
-  score: number;
+  screenshotNote?: string;
+  filePath?: string;
+  result: RunOutcome;
+  starDelta: -1 | 0 | 1;
+  rankName: string;
+  stars: number;
   isLifeMode: boolean;
+  usedShield: boolean;
 };
 
 export type UserStats = {
+  rankIndex: number;
+  stars: number;
   streak: number;
-  lastCompletedDate?: string;
   totalRuns: number;
+  wins: number;
+  losses: number;
+  lastCompletedDate?: string;
+  lastShieldDate?: string;
+  coins: number;
   xp: number;
-  level: number;
 };
 
 export type TodayState = {
   card: Card;
   durationMin: DurationMin;
   rerolled: boolean;
+  mode: GameMode;
   startedAt?: number;
   endAt?: number;
 };

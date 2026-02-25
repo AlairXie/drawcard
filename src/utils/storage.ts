@@ -9,10 +9,14 @@ const KEYS = {
 };
 
 const defaultStats: UserStats = {
+  rankIndex: 0,
+  stars: 0,
   streak: 0,
   totalRuns: 0,
-  xp: 0,
-  level: 1
+  wins: 0,
+  losses: 0,
+  coins: 0,
+  xp: 0
 };
 
 function safeRead<T>(key: string, fallback: T): T {
@@ -33,12 +37,16 @@ function safeWrite<T>(key: string, value: T) {
 }
 
 export function getCards(): Card[] {
-  const cards = safeRead<Card[]>(KEYS.cards, defaultCards);
+  const cards = safeRead<Card[]>(KEYS.cards, []);
   if (!cards.length) {
     safeWrite(KEYS.cards, defaultCards);
     return defaultCards;
   }
-  return cards;
+  return cards.map((c) => ({ ...c, enabledToday: c.enabledToday ?? true }));
+}
+
+export function saveCards(cards: Card[]) {
+  safeWrite(KEYS.cards, cards);
 }
 
 export function getRecords(): RunRecord[] {
@@ -50,7 +58,7 @@ export function saveRecords(records: RunRecord[]) {
 }
 
 export function getStats(): UserStats {
-  return safeRead<UserStats>(KEYS.stats, defaultStats);
+  return { ...defaultStats, ...safeRead<UserStats>(KEYS.stats, defaultStats) };
 }
 
 export function saveStats(stats: UserStats) {

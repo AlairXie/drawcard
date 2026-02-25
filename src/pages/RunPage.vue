@@ -16,10 +16,23 @@ onMounted(() => {
 function done() {
   router.push('/submit');
 }
+
+function earlyFinish() {
+  router.push('/submit');
+}
+
+function giveUp() {
+  const record = store.abandonRun();
+  if (record) {
+    sessionStorage.setItem('ss_last_result', record.id);
+    router.push('/result');
+  }
+}
 </script>
 
 <template>
   <CardView v-if="store.todayState?.card" :card="store.todayState.card" />
   <Timer v-if="store.todayState?.endAt" :end-at="store.todayState.endAt" @done="done" />
-  <button class="secondary" @click="store.abandonRun(); router.push('/')">放弃本局</button>
+  <button @click="earlyFinish">提前完成</button>
+  <button class="secondary" @click="giveUp">放弃</button>
 </template>
