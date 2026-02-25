@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>学习王者（MVP）</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>学习王者（MVP）</h1>
+      <p>抽卡开局 → 计时冲刺 → 提交产出 → 王者结算</p>
+    </header>
+
+    <section class="panel">
+      <h2>1）模式设置</h2>
+      <div class="row">
+        <label>模式
+          <select id="modeSelect">
+            <option value="mixed">混合模式（默认）</option>
+            <option value="single">单模式（按标签）</option>
+          </select>
+        </label>
+        <label>单模式标签
+          <select id="singleTagSelect"></select>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>2）卡池管理（当日最小行动）</h2>
+      <form id="cardForm" class="grid-form">
+        <input id="cardName" placeholder="卡名：改简历一句" required />
+        <input id="cardAction" placeholder="最小行动：可执行且≤15分钟" required />
+        <input id="cardLootHint" placeholder="产出提示：保存简历并截图" required />
+        <input id="cardTag" placeholder="标签：简历/算法/英语" />
+        <button type="submit">添加卡片</button>
+      </form>
+      <div id="cardList" class="card-list"></div>
+    </section>
+
+    <section class="panel">
+      <h2>3）抽卡与开局</h2>
+      <div class="row">
+        <button id="drawBtn">开始匹配（抽卡）</button>
+        <button id="redrawBtn" disabled>重抽 1 次</button>
+      </div>
+      <article id="drawResult" class="result muted">尚未抽卡</article>
+    </section>
+
+    <section class="panel">
+      <h2>4）计时冲刺</h2>
+      <div class="row">
+        <label><input type="radio" name="duration" value="3" />3 分钟</label>
+        <label><input type="radio" name="duration" value="10" checked />10 分钟</label>
+        <label><input type="radio" name="duration" value="15" />15 分钟</label>
+      </div>
+      <div class="timer" id="timerDisplay">10:00</div>
+      <div class="row">
+        <button id="startTimerBtn" disabled>开始计时</button>
+        <button id="finishEarlyBtn" disabled>提前完成</button>
+        <button id="abandonBtn" disabled>放弃</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>5）产出物提交（至少一种）</h2>
+      <form id="lootForm" class="grid-form">
+        <textarea id="lootText" placeholder="文本产出（至少1行）"></textarea>
+        <input id="lootLink" placeholder="链接（可选）" />
+        <input id="lootScreenshot" placeholder="截图说明/文件名（可选）" />
+        <input id="lootFile" placeholder="文件名/路径（可选）" />
+        <button type="submit" id="settleBtn" disabled>提交并结算</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>6）王者结算</h2>
+      <article id="settleResult" class="result muted">等待本局结束</article>
+      <button id="saveTomorrowBtn" disabled>保存“明天30秒下一步”</button>
+    </section>
+
+    <section class="panel">
+      <h2>7）历史战绩（按天）</h2>
+      <div id="historyList" class="history"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
