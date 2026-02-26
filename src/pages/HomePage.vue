@@ -12,7 +12,7 @@ onMounted(() => store.init());
 </script>
 
 <template>
-  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" :coins="store.stats.coins" :xp="store.stats.xp" />
+  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" />
 
   <div class="panel">
     <h3>学习王者 · 今日开局</h3>

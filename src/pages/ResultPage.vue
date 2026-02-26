@@ -22,7 +22,7 @@ const nextStep = computed(() => {
 </script>
 
 <template>
-  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" :coins="store.stats.coins" :xp="store.stats.xp" />
+  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" />
 
   <div v-if="record" class="panel">
     <h3>{{ record.result === 'win' ? '✅ 胜利' : '❌ 败北' }}</h3>
