@@ -27,7 +27,5 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="panel">
-    <div class="timer">{{ formatted }}</div>
-  </div>
+  <div class="battle-timer">{{ formatted }}</div>
 </template>

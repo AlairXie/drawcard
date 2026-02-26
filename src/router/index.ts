@@ -6,11 +6,13 @@ import RunPage from '../pages/RunPage.vue';
 import SubmitPage from '../pages/SubmitPage.vue';
 import ResultPage from '../pages/ResultPage.vue';
 import HistoryPage from '../pages/HistoryPage.vue';
+import PoolPage from '../pages/PoolPage.vue';
 
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: HomePage },
+    { path: '/pool', component: PoolPage },
     { path: '/draw', component: DrawPage },
     { path: '/run', component: RunPage },
     { path: '/submit', component: SubmitPage },
@@ -20,5 +22,5 @@ export const router = createRouter({
 });
 
 router.afterEach(() => {
-  document.title = '微行动';
+  document.title = '学习王者';
 });
