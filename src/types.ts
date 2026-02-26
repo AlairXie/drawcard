@@ -22,6 +22,7 @@ export type RunRecord = {
   startedAt: number;
   durationMin: DurationMin;
   cardId: string;
+  cardTitle: string;
   cardTier: CardTier;
   outputText: string;
   outputLink?: string;

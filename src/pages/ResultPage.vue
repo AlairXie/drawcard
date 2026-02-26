@@ -24,8 +24,13 @@ const hasShield = computed(() => store.stats.lastShieldDate !== new Date().toISO
   <div v-if="record" class="result-page" :class="record.result === 'win' ? 'win' : 'lose'">
     <h1>{{ record.result === 'win' ? 'VICTORY' : 'DEFEAT' }}</h1>
     <div class="result-card">
-      <p>{{ store.rankName }}</p>
-      <p>{{ record.starDelta > 0 ? '+1 星' : record.starDelta < 0 ? '-1 星' : '触发保星，不掉星！' }}</p>
+      <p class="rank-label">{{ store.rankName }}</p>
+      <div class="result-stars">
+        <span v-for="i in 3" :key="i" :class="['star', { filled: i <= record.stars }]">★</span>
+      </div>
+      <p class="star-delta" :class="{ down: record.starDelta < 0, shield: record.starDelta === 0 }">
+        {{ record.starDelta > 0 ? '+1 星' : record.starDelta < 0 ? '-1 星' : '触发保星，不掉星！' }}
+      </p>
       <p class="next-step">{{ store.nextStep(record.outputText.slice(0, 12)) }}</p>
     </div>
     <button class="ghost-cta" @click="router.push('/')">返回大厅</button>

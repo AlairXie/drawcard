@@ -14,7 +14,7 @@ const reversedRecords = computed(() => [...props.records].reverse());
     <ul v-else class="history-list">
       <li v-for="record in reversedRecords" :key="record.id" class="history-item">
         <div class="history-item-top">
-          <strong>{{ cardMap.get(record.cardId)?.title || '未知卡牌' }}</strong>
+          <strong>{{ cardMap.get(record.cardId)?.title || record.cardTitle || '未知卡牌' }}</strong>
           <span :class="['result-badge', record.result === 'win' ? 'win' : 'lose']">
             {{ record.result === 'win' ? '胜利' : '败北' }}
           </span>

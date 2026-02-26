@@ -127,13 +127,12 @@ export const useGameStore = defineStore('game', {
       let starDelta: -1 | 0 | 1 = payload.outcome === 'win' ? 1 : -1;
       let usedShield = false;
 
-      if (payload.outcome === 'lose' && this.stats.lastShieldDate !== today) {
+      const isAbandon = payload.isEarlyFinish ?? false;
+
+      if (payload.outcome === 'lose' && isAbandon && this.stats.lastShieldDate !== today) {
         starDelta = 0;
         usedShield = true;
         this.stats.lastShieldDate = today;
-      }
-      if (payload.outcome === 'win' && isLifeMode) {
-        starDelta = 0;
       }
 
       this.resolveRank(starDelta);
@@ -141,7 +140,7 @@ export const useGameStore = defineStore('game', {
       const win = payload.outcome === 'win';
       this.stats.totalRuns += 1;
       this.stats.lastCompletedDate = today;
-      this.stats.streak = win ? this.computeTodayStreak() : 0;
+      this.stats.streak = win ? this.stats.streak + 1 : 0;
       this.stats.wins += win ? 1 : 0;
       this.stats.losses += win ? 0 : 1;
       this.stats.coins += win ? (this.stats.streak >= 2 ? 2 : 1) : 0;
@@ -154,6 +153,7 @@ export const useGameStore = defineStore('game', {
         startedAt: this.todayState.startedAt,
         durationMin: this.todayState.durationMin,
         cardId: this.todayState.card.id,
+        cardTitle: this.todayState.card.title,
         cardTier: this.todayState.card.tier,
         outputText: payload.outputText,
         outputLink: payload.outputLink,
@@ -175,15 +175,6 @@ export const useGameStore = defineStore('game', {
     },
     abandonRun() {
       return this.settleRun({ outcome: 'lose', outputText: '本局放弃', isEarlyFinish: true });
-    },
-    computeTodayStreak() {
-      const today = todayDate();
-      const last = this.stats.lastCompletedDate;
-      if (!last) return 1;
-      const diff = daysDiff(last, today);
-      if (diff === 0) return Math.max(this.stats.streak, 1);
-      if (diff === 1) return this.stats.streak + 1;
-      return 1;
     },
     nextStep(cardTitle: string) {
       return `明天 30 秒下一步：先打开「${cardTitle}」相关文档，补 1 行即可。`;

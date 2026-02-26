@@ -8,6 +8,8 @@ const KEYS = {
   today: 'ss_today_state_v1'
 };
 
+const DEFAULT_TODAY_POOL_SIZE = 5;
+
 const defaultStats: UserStats = {
   rankIndex: 0,
   stars: 0,
@@ -39,10 +41,19 @@ function safeWrite<T>(key: string, value: T) {
 export function getCards(): Card[] {
   const cards = safeRead<Card[]>(KEYS.cards, []);
   if (!cards.length) {
-    safeWrite(KEYS.cards, defaultCards);
-    return defaultCards;
+    const seeded = defaultCards.map((card, index) => ({ ...card, enabledToday: index < DEFAULT_TODAY_POOL_SIZE }));
+    safeWrite(KEYS.cards, seeded);
+    return seeded;
   }
-  return cards.map((c) => ({ ...c, enabledToday: c.enabledToday ?? true }));
+
+  const hasEnabledFlag = cards.some((c) => typeof c.enabledToday === 'boolean');
+  if (!hasEnabledFlag) {
+    const normalized = cards.map((card, index) => ({ ...card, enabledToday: index < DEFAULT_TODAY_POOL_SIZE }));
+    safeWrite(KEYS.cards, normalized);
+    return normalized;
+  }
+
+  return cards.map((c) => ({ ...c, enabledToday: c.enabledToday ?? false }));
 }
 
 export function saveCards(cards: Card[]) {
@@ -79,5 +90,8 @@ export function saveTodayState(state: TodayState | null) {
 
 export function ensureCardSeeded() {
   const cards = safeRead<Card[]>(KEYS.cards, []);
-  if (!cards.length) safeWrite(KEYS.cards, defaultCards);
+  if (!cards.length) {
+    const seeded = defaultCards.map((card, index) => ({ ...card, enabledToday: index < DEFAULT_TODAY_POOL_SIZE }));
+    safeWrite(KEYS.cards, seeded);
+  }
 }
