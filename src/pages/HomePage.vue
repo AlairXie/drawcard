@@ -41,6 +41,7 @@ const hasShield = computed(() => store.stats.lastShieldDate !== new Date().toISO
     <div class="home-actions">
       <button class="primary-cta" @click="router.push({ path: '/draw', query: { duration } })">▶ 开始匹配</button>
       <button class="ghost-cta" @click="router.push('/pool')">管理卡池 ({{ store.enabledCards.length }}/{{ store.cards.length }})</button>
+      <button class="history-cta" @click="router.push('/history')">历史战绩</button>
     </div>
   </div>
 </template>
