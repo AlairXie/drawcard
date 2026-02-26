@@ -7,12 +7,14 @@ import SubmitPage from '../pages/SubmitPage.vue';
 import ResultPage from '../pages/ResultPage.vue';
 import HistoryPage from '../pages/HistoryPage.vue';
 import PoolPage from '../pages/PoolPage.vue';
+const DashboardPage = () => import('../pages/DashboardPage.vue');
 
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: HomePage },
     { path: '/pool', component: PoolPage },
+    { path: '/dashboard', component: DashboardPage },
     { path: '/draw', component: DrawPage },
     { path: '/run', component: RunPage },
     { path: '/submit', component: SubmitPage },

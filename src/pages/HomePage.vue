@@ -112,6 +112,7 @@ function startMatch() {
       </button>
       <button class="ghost-cta" @click="router.push('/pool')">管理卡池 ({{ store.enabledCards.length }}/{{ store.cards.length }})</button>
       <button class="ghost-cta" @click="router.push('/history')">历史战绩</button>
+      <button class="ghost-cta" @click="router.push('/dashboard')">📊 数据仪表盘</button>
     </div>
   </div>
 </template>
