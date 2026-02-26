@@ -30,18 +30,49 @@ function goDefeat() {
   }
 }
 
-const hasShield = computed(() => store.stats.lastShieldDate !== new Date().toISOString().slice(0, 10));
+const runMode = computed(() => store.todayState?.mode ?? store.mode);
+
+const hasShield = computed(() => {
+  const today = new Date().toISOString().slice(0, 10);
+  if (runMode.value === 'single' && store.todayState?.direction) {
+    return store.peakStats[store.todayState.direction].lastShieldDate !== today;
+  }
+  return store.stats.lastShieldDate !== today;
+});
+
+const streak = computed(() => {
+  if (runMode.value === 'single' && store.todayState?.direction) {
+    return store.peakStats[store.todayState.direction].streak;
+  }
+  return store.stats.streak;
+});
+
+const peakScore = computed(() => {
+  if (runMode.value === 'single' && store.todayState?.direction) {
+    return store.peakStats[store.todayState.direction].score;
+  }
+  return store.currentPeakScore;
+});
 </script>
 
 <template>
-  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" :has-shield="hasShield" />
+  <StreakBadge
+    :rank-name="store.rankName"
+    :stars="store.stats.stars"
+    :streak="streak"
+    :has-shield="hasShield"
+    :mode="runMode"
+    :peak-score="peakScore"
+  />
 
   <div class="battle-page" v-if="store.todayState?.card && store.todayState?.endAt">
     <Timer :end-at="store.todayState.endAt" @done="done" />
     <CardView :card="store.todayState.card" />
 
     <div class="battle-actions">
-      <button class="giveup-btn" @click="goDefeat">✕ 放弃 (可能掉星)</button>
+      <button class="giveup-btn" @click="goDefeat">
+        ✕ 放弃 {{ runMode === 'single' ? '(可能扣分)' : '(可能掉星)' }}
+      </button>
       <button class="finish-btn" @click="earlyFinish">✓ 提前完成</button>
     </div>
   </div>

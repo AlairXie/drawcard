@@ -1,10 +1,15 @@
 export type CardTier = 'S' | 'M' | 'L';
 
+export type CardDirection = '职业发展' | '技术能力' | '复盘';
+
 export type GameMode = 'mixed' | 'single';
+
+export const DIRECTIONS: CardDirection[] = ['职业发展', '技术能力', '复盘'];
 
 export type Card = {
   id: string;
   tier: CardTier;
+  direction: CardDirection;
   title: string;
   instruction: string;
   expectedOutputHint: string;
@@ -29,9 +34,15 @@ export type RunRecord = {
   screenshotNote?: string;
   filePath?: string;
   result: RunOutcome;
+  gameMode: GameMode;
+  direction?: CardDirection;
+  // mixed mode fields
   starDelta: -1 | 0 | 1;
   rankName: string;
   stars: number;
+  // peak mode fields
+  peakDelta?: number;
+  peakScore?: number;
   isLifeMode: boolean;
   usedShield: boolean;
 };
@@ -49,11 +60,24 @@ export type UserStats = {
   xp: number;
 };
 
+export type PeakDirectionStats = {
+  score: number;
+  streak: number;
+  totalRuns: number;
+  wins: number;
+  losses: number;
+  lastCompletedDate?: string;
+  lastShieldDate?: string;
+};
+
+export type PeakStats = Record<CardDirection, PeakDirectionStats>;
+
 export type TodayState = {
   card: Card;
   durationMin: DurationMin;
   rerolled: boolean;
   mode: GameMode;
+  direction?: CardDirection;
   startedAt?: number;
   endAt?: number;
 };

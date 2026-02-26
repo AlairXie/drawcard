@@ -21,11 +21,40 @@ function submit(payload: { outputText: string; outputLink?: string; screenshotNo
   }
 }
 
-const hasShield = computed(() => store.stats.lastShieldDate !== new Date().toISOString().slice(0, 10));
+const runMode = computed(() => store.todayState?.mode ?? store.mode);
+
+const hasShield = computed(() => {
+  const today = new Date().toISOString().slice(0, 10);
+  if (runMode.value === 'single' && store.todayState?.direction) {
+    return store.peakStats[store.todayState.direction].lastShieldDate !== today;
+  }
+  return store.stats.lastShieldDate !== today;
+});
+
+const streak = computed(() => {
+  if (runMode.value === 'single' && store.todayState?.direction) {
+    return store.peakStats[store.todayState.direction].streak;
+  }
+  return store.stats.streak;
+});
+
+const peakScore = computed(() => {
+  if (runMode.value === 'single' && store.todayState?.direction) {
+    return store.peakStats[store.todayState.direction].score;
+  }
+  return store.currentPeakScore;
+});
 </script>
 
 <template>
-  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" :has-shield="hasShield" />
+  <StreakBadge
+    :rank-name="store.rankName"
+    :stars="store.stats.stars"
+    :streak="streak"
+    :has-shield="hasShield"
+    :mode="runMode"
+    :peak-score="peakScore"
+  />
 
   <div class="submit-page" v-if="store.todayState?.card">
     <h2>提交战利品</h2>

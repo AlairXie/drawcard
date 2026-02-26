@@ -2,9 +2,19 @@
 import { computed } from 'vue';
 import type { Card, RunRecord } from '../types';
 
-const props = defineProps<{ records: RunRecord[]; cards: Card[] }>();
+const props = defineProps<{ records: RunRecord[]; cards: Card[]; isPeak?: boolean }>();
 const cardMap = computed(() => new Map(props.cards.map((c) => [c.id, c])));
 const reversedRecords = computed(() => [...props.records].reverse());
+
+function deltaText(record: RunRecord): string {
+  if (props.isPeak) {
+    const d = record.peakDelta;
+    if (d === undefined) return '';
+    if (d === 0) return '保护';
+    return d > 0 ? `+${d}分` : `${d}分`;
+  }
+  return record.starDelta > 0 ? '+1★' : record.starDelta < 0 ? '-1★' : '保星';
+}
 </script>
 
 <template>
@@ -19,7 +29,10 @@ const reversedRecords = computed(() => [...props.records].reverse());
             {{ record.result === 'win' ? '胜利' : '败北' }}
           </span>
         </div>
-        <p class="history-meta">{{ record.date }} · {{ record.durationMin }} 分钟 · {{ record.starDelta > 0 ? '+1★' : record.starDelta < 0 ? '-1★' : '保星' }}</p>
+        <p class="history-meta">
+          {{ record.date }} · {{ record.durationMin }} 分钟 · {{ deltaText(record) }}
+          <template v-if="isPeak && record.direction"> · {{ record.direction }}</template>
+        </p>
         <p class="history-loot">战利品：{{ record.outputText }}</p>
       </li>
     </ul>

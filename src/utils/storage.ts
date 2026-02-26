@@ -1,10 +1,12 @@
-import type { Card, RunRecord, TodayState, UserStats } from '../types';
+import type { Card, CardDirection, PeakDirectionStats, PeakStats, RunRecord, TodayState, UserStats } from '../types';
+import { DIRECTIONS } from '../types';
 import { defaultCards } from '../data/cards';
 
 const KEYS = {
   cards: 'ss_cards_v1',
   records: 'ss_records_v1',
   stats: 'ss_stats_v1',
+  peakStats: 'ss_peak_stats_v1',
   today: 'ss_today_state_v1'
 };
 
@@ -20,6 +22,35 @@ const defaultStats: UserStats = {
   coins: 0,
   xp: 0
 };
+
+function defaultPeakDir(): PeakDirectionStats {
+  return { score: 0, streak: 0, totalRuns: 0, wins: 0, losses: 0 };
+}
+
+function defaultPeakStats(): PeakStats {
+  return Object.fromEntries(DIRECTIONS.map((d) => [d, defaultPeakDir()])) as PeakStats;
+}
+
+const TAG_TO_DIRECTION: Record<string, CardDirection> = {
+  '简历': '职业发展',
+  '表达': '职业发展',
+  '写作': '职业发展',
+  '面试': '职业发展',
+  '算法': '技术能力',
+  '八股': '技术能力',
+  '学习': '技术能力',
+  '工程': '技术能力',
+  '复盘': '复盘',
+  '效率': '复盘',
+  '数据': '复盘',
+  '保命': '复盘',
+};
+
+function inferDirection(card: Card & { direction?: CardDirection }): CardDirection {
+  if (card.direction) return card.direction;
+  const tag = card.tags?.[0] ?? '';
+  return TAG_TO_DIRECTION[tag] ?? '复盘';
+}
 
 function safeRead<T>(key: string, fallback: T): T {
   try {
@@ -46,14 +77,18 @@ export function getCards(): Card[] {
     return seeded;
   }
 
-  const hasEnabledFlag = cards.some((c) => typeof c.enabledToday === 'boolean');
-  if (!hasEnabledFlag) {
-    const normalized = cards.map((card, index) => ({ ...card, enabledToday: index < DEFAULT_TODAY_POOL_SIZE }));
+  const needsMigration = cards.some((c) => !(c as Card & { direction?: string }).direction);
+  const normalized = cards.map((c, index) => ({
+    ...c,
+    enabledToday: typeof c.enabledToday === 'boolean' ? c.enabledToday : index < DEFAULT_TODAY_POOL_SIZE,
+    direction: inferDirection(c),
+  }));
+
+  if (needsMigration) {
     safeWrite(KEYS.cards, normalized);
-    return normalized;
   }
 
-  return cards.map((c) => ({ ...c, enabledToday: c.enabledToday ?? false }));
+  return normalized;
 }
 
 export function saveCards(cards: Card[]) {
@@ -61,7 +96,17 @@ export function saveCards(cards: Card[]) {
 }
 
 export function getRecords(): RunRecord[] {
-  return safeRead<RunRecord[]>(KEYS.records, []);
+  const records = safeRead<RunRecord[]>(KEYS.records, []);
+  const needsMigration = records.length > 0 && records.some((r) => !r.gameMode);
+  if (needsMigration) {
+    const migrated = records.map((r) => ({
+      ...r,
+      gameMode: r.gameMode ?? ('mixed' as const),
+    }));
+    safeWrite(KEYS.records, migrated);
+    return migrated;
+  }
+  return records;
 }
 
 export function saveRecords(records: RunRecord[]) {
@@ -74,6 +119,21 @@ export function getStats(): UserStats {
 
 export function saveStats(stats: UserStats) {
   safeWrite(KEYS.stats, stats);
+}
+
+export function getPeakStats(): PeakStats {
+  const stored = safeRead<Partial<PeakStats>>(KEYS.peakStats, {});
+  const base = defaultPeakStats();
+  for (const d of DIRECTIONS) {
+    if (stored[d]) {
+      base[d] = { ...defaultPeakDir(), ...stored[d] };
+    }
+  }
+  return base;
+}
+
+export function savePeakStats(stats: PeakStats) {
+  safeWrite(KEYS.peakStats, stats);
 }
 
 export function getTodayState(): TodayState | null {
