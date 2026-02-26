@@ -15,24 +15,19 @@ const record = computed(() => {
   return store.records.find((r) => r.id === id) ?? store.lastRecord;
 });
 
-const nextStep = computed(() => {
-  if (!record.value) return '明天 30 秒下一步：打开应用点开始匹配。';
-  return store.nextStep(record.value.outputText.slice(0, 12));
-});
+const hasShield = computed(() => store.stats.lastShieldDate !== new Date().toISOString().slice(0, 10));
 </script>
 
 <template>
-  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" />
+  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" :has-shield="hasShield" />
 
-  <div v-if="record" class="panel">
-    <h3>{{ record.result === 'win' ? '✅ 胜利' : '❌ 败北' }}</h3>
-    <p>星星变化：{{ record.starDelta > 0 ? '+1★' : record.starDelta < 0 ? '-1★' : '保星' }}</p>
-    <p v-if="record.usedShield">🛡️ 今日首次败北触发保星卡。</p>
-    <p>连胜：x{{ store.stats.streak }}</p>
-    <p>战利品：{{ record.outputText }}</p>
-    <p>{{ nextStep }}</p>
-    <button @click="router.push('/draw')">再开一局</button>
-    <button class="secondary" @click="router.push('/history')">查看历史</button>
-    <button class="secondary" @click="router.push('/')">返回首页</button>
+  <div v-if="record" class="result-page" :class="record.result === 'win' ? 'win' : 'lose'">
+    <h1>{{ record.result === 'win' ? 'VICTORY' : 'DEFEAT' }}</h1>
+    <div class="result-card">
+      <p>{{ store.rankName }}</p>
+      <p>{{ record.starDelta > 0 ? '+1 星' : record.starDelta < 0 ? '-1 星' : '触发保星，不掉星！' }}</p>
+      <p class="next-step">{{ store.nextStep(record.outputText.slice(0, 12)) }}</p>
+    </div>
+    <button class="ghost-cta" @click="router.push('/')">返回大厅</button>
   </div>
 </template>

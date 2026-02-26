@@ -1,44 +1,31 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import CardView from '../components/CardView.vue';
+import { onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useGameStore } from '../stores/game';
 import type { DurationMin } from '../types';
 
 const store = useGameStore();
 const router = useRouter();
-const duration = ref<DurationMin>(10);
-const card = ref(store.todayState?.card);
+const route = useRoute();
 
 onMounted(() => {
   store.init();
-  if (!card.value) card.value = store.pickCard(duration.value, false);
+  const duration = Number(route.query.duration ?? 10) as DurationMin;
+  store.pickCard(duration, false);
+  setTimeout(() => {
+    store.startRun();
+    router.replace('/run');
+  }, 1500);
 });
-
-function reroll() {
-  if (store.todayState?.rerolled) return;
-  card.value = store.pickCard(duration.value, true);
-}
-
-function confirm() {
-  store.startRun();
-  router.push('/run');
-}
 </script>
 
 <template>
-  <div class="panel">
-    <h3>匹配成功，选择冲刺时长</h3>
-    <select v-model.number="duration">
-      <option :value="3">3 分钟（保命模式）</option>
-      <option :value="10">10 分钟（默认）</option>
-      <option :value="15">15 分钟（拉满）</option>
-    </select>
-    <button @click="card = store.pickCard(duration, false)">抽卡</button>
-    <button class="secondary" :disabled="store.todayState?.rerolled" @click="reroll">重抽一次</button>
+  <div class="matching-page">
+    <div class="matching-ring">
+      <div class="ring pulse"></div>
+      <div class="ring spin"></div>
+      <span>匹配中...</span>
+    </div>
+    <p>正在为你抽取命运的卡牌</p>
   </div>
-
-  <CardView v-if="card" :card="card" />
-  <button v-if="card" @click="confirm">开始冲刺</button>
-  <button class="secondary" @click="router.push('/')">返回首页</button>
 </template>

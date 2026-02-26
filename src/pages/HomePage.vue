@@ -1,36 +1,46 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import CardManager from '../components/CardManager.vue';
 import StreakBadge from '../components/StreakBadge.vue';
 import { useGameStore } from '../stores/game';
+import type { DurationMin } from '../types';
 
 const store = useGameStore();
 const router = useRouter();
+const duration = ref<DurationMin>(10);
 
 onMounted(() => store.init());
+
+const hasShield = computed(() => store.stats.lastShieldDate !== new Date().toISOString().slice(0, 10));
 </script>
 
 <template>
-  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" />
+  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" :has-shield="hasShield" />
 
-  <div class="panel">
-    <h3>学习王者 · 今日开局</h3>
-    <p>默认混合模式：不选方向，直接抽卡开战。</p>
-    <div class="row">
-      <label><input type="radio" value="mixed" :checked="store.mode === 'mixed'" @change="store.setMode('mixed')" /> 混合模式</label>
-      <label><input type="radio" value="single" :checked="store.mode === 'single'" @change="store.setMode('single')" /> 单模式</label>
-      <input v-if="store.mode === 'single'" v-model="store.selectedTag" placeholder="输入标签，如 算法" />
+  <div class="dashboard">
+    <section class="hero">
+      <h2>学习王者</h2>
+      <p>抽卡开局 · 冲刺提交 · 连胜上段</p>
+    </section>
+
+    <section class="settings-card">
+      <div class="setting-row">
+        <span>冲刺时长</span>
+        <div class="duration-group">
+          <button v-for="t in [3, 10, 15]" :key="t" class="duration-btn" :class="{ active: duration === t }" @click="duration = t as DurationMin">
+            {{ t }}m
+          </button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <span>卡池模式</span>
+        <span class="mode-text">混合模式 (默认)</span>
+      </div>
+    </section>
+
+    <div class="home-actions">
+      <button class="primary-cta" @click="router.push({ path: '/draw', query: { duration } })">▶ 开始匹配</button>
+      <button class="ghost-cta" @click="router.push('/pool')">管理卡池 ({{ store.enabledCards.length }}/{{ store.cards.length }})</button>
     </div>
-    <button @click="router.push('/draw')">开始匹配</button>
-    <button class="secondary" @click="router.push('/history')">历史战绩</button>
   </div>
-
-  <div v-if="store.lastRecord" class="panel">
-    <h3>上局战报</h3>
-    <p>{{ store.lastRecord.result === 'win' ? '胜利' : '败北' }} · {{ store.lastRecord.starDelta > 0 ? '+1★' : store.lastRecord.starDelta < 0 ? '-1★' : '保星' }}</p>
-    <small>{{ store.lastRecord.outputText }}</small>
-  </div>
-
-  <CardManager />
 </template>

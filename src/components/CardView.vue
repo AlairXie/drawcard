@@ -4,12 +4,13 @@ defineProps<{ card: Card }>();
 </script>
 
 <template>
-  <div class="panel">
-    <div class="row"><strong>{{ card.title }}</strong> <span class="badge">{{ card.tier }}</span></div>
+  <div class="battle-card">
+    <div class="card-tag">{{ card.tags?.[0] || card.tier }}</div>
+    <h2>{{ card.title }}</h2>
     <p>{{ card.instruction }}</p>
-    <small>产出提示：{{ card.expectedOutputHint }}</small>
-    <div v-if="card.tags?.length" class="row">
-      <small v-for="tag in card.tags" :key="tag" class="badge">#{{ tag }}</small>
+    <div class="output-box">
+      <small>产出要求：</small>
+      <div>{{ card.expectedOutputHint }}</div>
     </div>
   </div>
 </template>
