@@ -25,7 +25,7 @@ const hasShield = computed(() => store.stats.lastShieldDate !== new Date().toISO
 </script>
 
 <template>
-  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" :has-shield="hasShield" />
+  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" :has-shield="hasShield" :mode="store.mode" :peak-score="store.currentPeakScore" />
 
   <div class="submit-page" v-if="store.todayState?.card">
     <h2>提交战利品</h2>

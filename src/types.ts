@@ -1,6 +1,6 @@
 export type CardTier = 'S' | 'M' | 'L';
 
-export type GameMode = 'mixed' | 'single';
+export type GameMode = 'mixed' | 'peak';
 
 export type Card = {
   id: string;
@@ -29,9 +29,13 @@ export type RunRecord = {
   screenshotNote?: string;
   filePath?: string;
   result: RunOutcome;
+  mode: GameMode;
+  selectedTag?: string;
   starDelta: -1 | 0 | 1;
   rankName: string;
   stars: number;
+  peakDelta: number;
+  peakScore: number;
   isLifeMode: boolean;
   usedShield: boolean;
 };
@@ -47,6 +51,7 @@ export type UserStats = {
   lastShieldDate?: string;
   coins: number;
   xp: number;
+  peakScores: Record<string, number>;
 };
 
 export type TodayState = {
@@ -54,6 +59,7 @@ export type TodayState = {
   durationMin: DurationMin;
   rerolled: boolean;
   mode: GameMode;
+  selectedTag?: string;
   startedAt?: number;
   endAt?: number;
 };

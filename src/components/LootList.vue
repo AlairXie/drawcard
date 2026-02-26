@@ -19,7 +19,10 @@ const reversedRecords = computed(() => [...props.records].reverse());
             {{ record.result === 'win' ? '胜利' : '败北' }}
           </span>
         </div>
-        <p class="history-meta">{{ record.date }} · {{ record.durationMin }} 分钟 · {{ record.starDelta > 0 ? '+1★' : record.starDelta < 0 ? '-1★' : '保星' }}</p>
+        <p class="history-meta">
+          {{ record.date }} · {{ record.durationMin }} 分钟 ·
+          {{ record.mode === 'peak' ? (record.peakDelta > 0 ? `+${record.peakDelta}分` : record.peakDelta < 0 ? `${record.peakDelta}分` : '巅峰保护') : (record.starDelta > 0 ? '+1★' : record.starDelta < 0 ? '-1★' : '保星') }}
+        </p>
         <p class="history-loot">战利品：{{ record.outputText }}</p>
       </li>
     </ul>

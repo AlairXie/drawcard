@@ -1,11 +1,13 @@
-import type { Card, RunRecord, TodayState, UserStats } from '../types';
+import type { Card, GameMode, RunRecord, TodayState, UserStats } from '../types';
 import { defaultCards } from '../data/cards';
 
 const KEYS = {
   cards: 'ss_cards_v1',
   records: 'ss_records_v1',
   stats: 'ss_stats_v1',
-  today: 'ss_today_state_v1'
+  today: 'ss_today_state_v1',
+  mode: 'ss_mode_v1',
+  selectedTag: 'ss_selected_tag_v1'
 };
 
 const DEFAULT_TODAY_POOL_SIZE = 5;
@@ -18,7 +20,8 @@ const defaultStats: UserStats = {
   wins: 0,
   losses: 0,
   coins: 0,
-  xp: 0
+  xp: 0,
+  peakScores: {}
 };
 
 function safeRead<T>(key: string, fallback: T): T {
@@ -69,7 +72,8 @@ export function saveRecords(records: RunRecord[]) {
 }
 
 export function getStats(): UserStats {
-  return { ...defaultStats, ...safeRead<UserStats>(KEYS.stats, defaultStats) };
+  const stats = safeRead<UserStats>(KEYS.stats, defaultStats);
+  return { ...defaultStats, ...stats, peakScores: stats.peakScores ?? {} };
 }
 
 export function saveStats(stats: UserStats) {
@@ -86,6 +90,23 @@ export function saveTodayState(state: TodayState | null) {
     return;
   }
   safeWrite(KEYS.today, state);
+}
+
+export function getStoredMode(): GameMode {
+  const mode = safeRead<GameMode>(KEYS.mode, 'mixed');
+  return mode === 'peak' ? 'peak' : 'mixed';
+}
+
+export function saveStoredMode(mode: GameMode) {
+  safeWrite(KEYS.mode, mode);
+}
+
+export function getSelectedTag(): string {
+  return safeRead<string>(KEYS.selectedTag, '');
+}
+
+export function saveSelectedTag(tag: string) {
+  safeWrite(KEYS.selectedTag, tag);
 }
 
 export function ensureCardSeeded() {

@@ -11,6 +11,10 @@ const route = useRoute();
 onMounted(() => {
   store.init();
   const duration = Number(route.query.duration ?? 10) as DurationMin;
+  if (store.mode === 'peak' && !store.selectedTag) {
+    router.replace('/');
+    return;
+  }
   store.pickCard(duration, false);
   setTimeout(() => {
     store.startRun();

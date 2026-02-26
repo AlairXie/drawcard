@@ -34,7 +34,7 @@ const hasShield = computed(() => store.stats.lastShieldDate !== new Date().toISO
 </script>
 
 <template>
-  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" :has-shield="hasShield" />
+  <StreakBadge :rank-name="store.rankName" :stars="store.stats.stars" :streak="store.stats.streak" :has-shield="hasShield" :mode="store.mode" :peak-score="store.currentPeakScore" />
 
   <div class="battle-page" v-if="store.todayState?.card && store.todayState?.endAt">
     <Timer :end-at="store.todayState.endAt" @done="done" />
