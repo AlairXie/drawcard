@@ -5,6 +5,7 @@ import {
   ensureCardSeeded, getCards, getPeakStats, getRecords, getStats,
   getTodayState, saveCards, savePeakStats, saveRecords, saveStats, saveTodayState
 } from '../utils/storage';
+import { cardApi } from '../utils/api';
 
 const RANKS = ['青铜', '白银', '黄金', '铂金', '钻石', '星耀', '王者'];
 const STARS_PER_RANK = 3;
@@ -81,9 +82,13 @@ export const useGameStore = defineStore('game', {
     peakRecords: (state) => state.records.filter((r) => r.gameMode === 'single'),
   },
   actions: {
-    init() {
-      ensureCardSeeded();
-      this.cards = getCards();
+    async init() {
+      try {
+        this.cards = await cardApi.list();
+      } catch {
+        ensureCardSeeded();
+        this.cards = getCards();
+      }
       this.records = getRecords();
       this.stats = getStats();
       this.peakStats = getPeakStats();
@@ -95,28 +100,51 @@ export const useGameStore = defineStore('game', {
     setDirection(dir: CardDirection) {
       this.selectedDirection = dir;
     },
-    upsertCard(input: Partial<Card> & Pick<Card, 'title' | 'instruction' | 'expectedOutputHint' | 'tier' | 'direction'>) {
-      if (input.id) {
-        this.cards = this.cards.map((card) => (card.id === input.id ? { ...card, ...input } : card));
-      } else {
-        this.cards.push({
-          id: crypto.randomUUID(),
-          tier: input.tier,
-          direction: input.direction,
-          title: input.title,
-          instruction: input.instruction,
-          expectedOutputHint: input.expectedOutputHint,
-          tags: input.tags ?? [],
-          enabledToday: true
-        });
+    async upsertCard(input: Partial<Card> & Pick<Card, 'title' | 'instruction' | 'expectedOutputHint' | 'tier' | 'direction'>) {
+      const payload = {
+        tier: input.tier,
+        direction: input.direction,
+        title: input.title,
+        instruction: input.instruction,
+        expectedOutputHint: input.expectedOutputHint,
+        tags: input.tags ?? [],
+        enabledToday: input.enabledToday ?? true,
+      };
+      try {
+        if (input.id) {
+          const updated = await cardApi.update(input.id, payload);
+          this.cards = this.cards.map((c) => (c.id === updated.id ? updated : c));
+        } else {
+          const created = await cardApi.create(payload);
+          this.cards.push(created);
+        }
+      } catch {
+        if (input.id) {
+          this.cards = this.cards.map((card) => (card.id === input.id ? { ...card, ...input } : card));
+        } else {
+          this.cards.push({
+            id: crypto.randomUUID(),
+            tier: input.tier, direction: input.direction, title: input.title,
+            instruction: input.instruction, expectedOutputHint: input.expectedOutputHint,
+            tags: input.tags ?? [], enabledToday: true,
+          });
+        }
+        saveCards(this.cards);
       }
-      saveCards(this.cards);
     },
-    removeCard(id: string) {
+    async removeCard(id: string) {
+      try {
+        await cardApi.remove(id);
+      } catch { /* fallback */ }
       this.cards = this.cards.filter((c) => c.id !== id);
       saveCards(this.cards);
     },
-    toggleCardEnabled(id: string) {
+    async toggleCardEnabled(id: string) {
+      try {
+        const updated = await cardApi.toggle(id);
+        this.cards = this.cards.map((c) => (c.id === updated.id ? updated : c));
+        return;
+      } catch { /* fallback */ }
       this.cards = this.cards.map((c) => (c.id === id ? { ...c, enabledToday: !c.enabledToday } : c));
       saveCards(this.cards);
     },
